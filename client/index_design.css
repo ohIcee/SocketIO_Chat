@@ -9,8 +9,7 @@
 
     body {
         background-color: #424242;
-        font-family: Roboto;
-        /*min-width: 550px;*/
+        font-family: Roboto, Arial, Helvetica, sans-serif;
     }
 
     #text_channel_name_header {
@@ -50,11 +49,6 @@
 
     #chat_log ul li:first-child {
         text-align: center;
-        color: grey;
-    }
-
-    #chat_log ul li:nth-child(even) {
-        background-color: rgba(0, 0, 0, 0.25);
     }
 
     #message_input_bottom_wrapper {
@@ -63,23 +57,27 @@
         /*background-color: #1b1b1b;*/
         background-color: #424242;
         /*border-top: 3px solid white;*/
+        text-align: center;
         height: 75px;
         bottom: 0;
         right: 0;
-        display:table-cell;
-        text-align:center;
-        vertical-align:middle;
+        left: 0;
+    }
+
+    #message_input_bottom_wrapper #user_typing_annotation {
+        color: gray;
+        margin-top: -20px;
+        margin-bottom: 0;
+        display: none;
     }
 
     #message_input_bottom_wrapper #message_input_bottom {
-        height: 55%;
+        height:75%;
         background-color: transparent;
         color: #ffffff;
         width: 50vw;
-        /*min-width: 550px;*/
-        padding: 5px 10px;
         border: none;
-        margin: 12px;
+        margin-top: 5px;
         transition-duration: 0.3s;
         border-bottom: 1px solid transparent;
         border-top: 2px solid gray;
@@ -88,14 +86,12 @@
 
     #message_input_bottom_wrapper #message_input_bottom:hover {
         border-bottom: 1px solid gray;
-        border-radius: 5px;
     }
 
     #message_input_bottom_wrapper #message_input_bottom:focus {
         border-top: 2px solid gray;
         border-bottom: 1px solid gray;
         outline: none;
-        border-radius: 5px;
     }
     
     @media (max-width: 1200px) {
@@ -154,6 +150,15 @@
         text-align: center; 
         color: white;
         margin-top: 40vh;
+    }
+
+    #nickname_select_view a {
+        text-decoration: none;
+        color: lightgray;
+    }
+
+    #nickname_select_view a:hover {
+        text-decoration: underline;
     }
 
     #nickname_select_view #header_text {

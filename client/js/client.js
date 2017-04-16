@@ -3,15 +3,82 @@ $('#nickname_select_view').show();
 
 var sock = io();
 
+var show_users_typing = true;
+var dynamic_message_background_colors = true;
+sock.on('settings', (data) => {
+    show_users_typing = data.showUsersTyping;
+    dynamic_message_background_colors = data.DynamicMessageBGColors;
+});
+
 sock.on('msg', onMessage);
 sock.on('servermsg', onServerMessage);
+
+if(show_users_typing) {
+    sock.on('user_typing_func', (data) => {
+        if(data.isTyping) {
+            if(data.users.length > 1) {
+                $('#user_typing_annotation').html(data.users + ' are typing...');
+            } else {
+                $('#user_typing_annotation').html(data.users + ' is typing...');
+            }
+            $('#user_typing_annotation').show();
+        } else {
+            $('#user_typing_annotation').hide();
+        }
+    });
+}
 
 function onMessage(msg, nick) {
     msg = sanitize(msg);
     var message = '<span style="font-weight: bold">' + nick + '</span><br/><span style="color: #ffffff">' + msg + '</span>';
-    var temp = $('#messages').append($('<li>').html(message));
+    $('#chat_log ul li:first-child').css("color", "grey");
+
+    if(dynamic_message_background_colors) {
+        if(prevMessageNick != nick) {
+            switchColor();
+            $('#messages').append($('<li>').html(message).css("background-color", getCurrentColor()));
+        }           
+       
+        if(prevMessageNick == nick) {
+            /*var temp = $('#chat_log ul li:last-child');
+            temp.prev().css("background-color", getCurrentColor());*/
+            $('#messages').append($('<li>').html(message).css("background-color", getCurrentColor()));
+            $('#chat_log ul li:last-child').prev().css("background-color", getCurrentColor());
+        }
+    } else {
+        $('#messages').append($('<li>').html(message));
+        $('#chat_log ul li:nth-child(even)').css("background-color", "rgba(0, 0, 0, 0.25)");
+    }
 
     $('body').animate({ scrollTop: $('#messages').height() }, 100);
+
+    prevMessageNick = nick;
+
+}
+
+if(dynamic_message_background_colors) {
+
+    var prevMessageNick = "";
+
+    var currentcolor = true;
+    function switchColor() {
+        // true = rgba(0, 0, 0, 0.25)
+        // false = transparent
+        if(currentcolor) {
+            currentcolor = false;
+        } else {
+            currentcolor = true;
+        }
+    }
+
+    function getCurrentColor() {
+        if(currentcolor) {
+            return 'transparent';
+        } else {
+            return 'rgba(0, 0, 0, 0.25)';
+        }
+    }
+
 }
 
 function onServerMessage(msg) {
@@ -21,8 +88,38 @@ function onServerMessage(msg) {
     $('body').animate({ scrollTop: $('#messages').height() }, 100);
 }
 
+if(show_users_typing) {
+
+    var broadcasted_typing = false;
+
+    setInterval(function() {
+        check_if_typing();
+    }, 500);
+
+
+    function check_if_typing() {
+
+        if(jQuery.trim( $('#message_input_bottom').val() ).length != 0) {
+
+        if(!broadcasted_typing)
+            sock.emit('user typing', true);
+        broadcasted_typing = true;
+
+        } else {
+
+            if(broadcasted_typing)
+                sock.emit('user typing', false);
+            broadcasted_typing = false;
+
+        }
+
+    }
+
+}
+
 // Run when any key is pressed
 $(document).keydown(function(e) {
+
 
 // If enter is pressed and message_input_bottom is focused
 if(e.which == 13 && $('#message_input_bottom').is(":focus")) {
