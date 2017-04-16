@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+
+    <link rel="stylesheet" type="text/css" href="index_design.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  </head>
+  <body>
+
+    <div id="website_wrapper">
+
+        <div id="nickname_select_view">
+
+            <div id="wrapper">
+                <p id="header_text"> Enter your nickname </p>
+                <input id="server_nickname_input" type="text" placeholder="nickname" required>
+            </div>
+
+        </div>
+
+        <div id="chat_room_view" style="display: none">
+
+            <p id="text_channel_name_header">#GENERAL_CHANNEL</p>
+
+            <div id="chat_log">
+                <ul id="messages">
+                    <li>Welcome to #GENERAL_CHANNEL</li>
+                </ul>
+            </div>
+
+            <div id="message_input_bottom_wrapper">
+                <input id="message_input_bottom" type="text" placeholder="Type a message to send"></input>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="js/client.js"></script>
+
+  </body>
+</html>
