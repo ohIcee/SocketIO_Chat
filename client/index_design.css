@@ -1,193 +1,313 @@
 #website_wrapper {
-        width: 50vw;
-        margin: 0 auto;
-    }
+    width: 50vw;
+    margin: 0 auto;
+}
 
-    * {
-        transition-duration: 0.3s;
-    }
+* {
+    transition-duration: 0.3s;
+}
 
+body {
+    background-color: #424242;
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    margin-top: 75px;
+}
+
+#text_channel_name_header {
+    text-align: center;
+    font-size: 2.9vw;
+    color: white;
+    transition-duration: 0.1s;
+}
+
+#online_users {
+    width: 100%;
+    height: auto;
+    min-height: 50px;
+    text-align: center;
+    color: gray;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+    padding-bottom: 25px;
+}
+
+#online_users #header {
+    color: white;
+}
+
+#online_users #user {
+    word-wrap: break-word;
+    padding: 5px;
+    border-left: 1px solid gray;
+}
+
+#online_users #user:first-child {
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+}
+
+#online_users #user:last-child {
+    border-right: 1px solid gray;
+}
+
+#chat_log {
+    height: auto;
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 25px;
+    background-color: rgba(0, 0, 0, 0.1);
+    padding-top: 1px;
+}
+
+#chat_log ul {
+    list-style-type: none;
+    width: 95%;
+    height: auto;
+    min-height: 50px;
+    margin: 0 auto;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    padding: 0;
+    color: white;
+    padding-bottom: 75px;
+}
+
+#chat_log ul li {
+    word-wrap: break-word;
+    padding: 15px;
+}
+
+#chat_log ul li:first-child {
+    text-align: center;
+}
+
+#message_input_bottom_wrapper {
+    position: fixed;
+    width: 100%;
+    background-color: #424242;
+    text-align: center;
+    height: 75px;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+#message_input_bottom_wrapper #user_typing_annotation {
+    color: gray;
+    margin-top: -20px;
+    margin-bottom: 0;
+    display: none;
+}
+
+#message_input_bottom_wrapper #message_input_bottom {
+    height:75%;
+    background-color: transparent;
+    color: #ffffff;
+    width: 50vw;
+    border: none;
+    margin-top: 5px;
+    transition-duration: 0.3s;
+    border-bottom: 1px solid transparent;
+    border-top: 2px solid gray;
+    
+}
+
+#message_input_bottom_wrapper #message_input_bottom:hover {
+    border-bottom: 1px solid gray;
+}
+
+#message_input_bottom_wrapper #message_input_bottom:focus {
+    border-top: 2px solid gray;
+    border-bottom: 1px solid gray;
+    outline: none;
+}
+
+#nickname_select_view #wrapper {
+    text-align: center; 
+    color: white;
+    margin-top: 40vh;
+}
+
+#nickname_select_view a {
+    text-decoration: none;
+    color: lightgray;
+}
+
+#nickname_select_view a:hover {
+    text-decoration: underline;
+}
+
+#nickname_select_view #header_text {
+    font-size: 2.9vw;
+}
+
+#nickname_select_view #server_nickname_input {
+    height: 50px;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: white;
+    text-align: center;
+    font-size: 30px;
+    box-shadow: inset 0px 0px 10px rgba(0,0,0,0.9);
+}
+
+#nickname_select_view #server_nickname_input:hover, #nickname_select_view #server_nickname_input:focus {
+    background-color: white;
+    color: black;
+}
+
+#nickname_select_view #server_nickname_input:valid {
+    background-color: white;
+    color: black;
+    border-color: #76FF03;
+}
+
+#nickname_select_view #server_nickname_input:invalid {
+    border-color: red;
+}
+
+#top_nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background-color: #424242;
+}
+
+#top_nav #menu_button {
+    height: 50px;
+    width: 50px;
+    background-color: transparent;
+    border: none;
+    transition-duration: 0.3s;
+    cursor: pointer;
+}
+
+#top_nav #menu_button:hover {
+    background-color: black;
+    color: white;
+}
+
+#users_nav {
+    text-align: center;
+}
+
+#users_nav #header {
+    font-size: 25px;
+    color: #818181;
+}
+
+#active_user {
+    color: white;
+    list-style-type: none;
+}
+
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav a:hover, .offcanvas a:focus{
+    color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+@media (max-width: 600px) {
     body {
-        background-color: #424242;
-        font-family: Roboto, Arial, Helvetica, sans-serif;
+        margin: 0;
+        overflow-x: hidden;
     }
-
-    #text_channel_name_header {
-        text-align: center;
-        font-size: 2.9vw;
-        color: white;
-        transition-duration: 0.1s;
+    #website_wrapper {
+        width: 100vw !important;
     }
-
+    #top_nav #menu_button {
+        margin-right: 18px;
+    }
     #chat_log {
-        height: auto;
         width: 100%;
-        margin: 0 auto;
-        margin-top: 25px;
-        background-color: rgba(0, 0, 0, 0.1);
-        padding-top: 1px;
-    }
-
-    #chat_log ul {
-        list-style-type: none;
-        width: 95%;
-        height: auto;
-        min-height: 50px;
-        margin: 0 auto;
-        margin-top: 50px;
-        margin-bottom: 50px;
+        background-color: transparent;
         padding: 0;
-        color: white;
-        padding-bottom: 75px;
+        margin: 0 auto;
     }
-
-    #chat_log ul li {
-        /*margin-bottom: 25px; */
-        word-wrap: break-word;
-        padding: 15px;
-    }
-
-    #chat_log ul li:first-child {
-        text-align: center;
-    }
-
-    #message_input_bottom_wrapper {
-        position: fixed;
+    #chat_log ul {
         width: 100%;
-        /*background-color: #1b1b1b;*/
-        background-color: #424242;
-        /*border-top: 3px solid white;*/
-        text-align: center;
-        height: 75px;
-        bottom: 0;
-        right: 0;
-        left: 0;
     }
-
-    #message_input_bottom_wrapper #user_typing_annotation {
-        color: gray;
-        margin-top: -20px;
-        margin-bottom: 0;
-        display: none;
+    #chat_log ul li {
+        padding: 11px;
+    }
+    #messages {
+        width: 100%;
+        padding: 0;
+        margin: 0 auto;
+    }
+    #text_channel_name_header {
+        font-size: 20px;
     }
 
     #message_input_bottom_wrapper #message_input_bottom {
-        height:75%;
-        background-color: transparent;
-        color: #ffffff;
-        width: 50vw;
-        border: none;
-        margin-top: 5px;
-        transition-duration: 0.3s;
-        border-bottom: 1px solid transparent;
-        border-top: 2px solid gray;
-        
+        padding: 0;
+        margin: 0 auto;
     }
-
-    #message_input_bottom_wrapper #message_input_bottom:hover {
-        border-bottom: 1px solid gray;
-    }
-
-    #message_input_bottom_wrapper #message_input_bottom:focus {
-        border-top: 2px solid gray;
-        border-bottom: 1px solid gray;
-        outline: none;
-    }
-    
-    @media (max-width: 1200px) {
-        #website_wrapper {
-            width: 80vw;
-        }
-        #message_input_bottom_wrapper #message_input_bottom {
-            width: 80vw;
-        }
-    }
-
-    @media (max-width: 600px) {
-        body {
-            margin: 0;
-        }
-       #chat_log {
-           width: 100%;
-           background-color: transparent;
-           padding: 0;
-           margin: 0 auto;
-       }
-       #messages {
-           width: 100%;
-           padding: 0;
-           margin: 0 auto;
-           
-       }
-       #text_channel_name_header {
-           font-size: 20px;
-       }
-
-       #message_input_bottom_wrapper #message_input_bottom {
-           width: 98%;
-           padding: 0;
-           margin: 0 auto;
-       }
-       #website_wrapper {
-           width: 100%;
-       }
-       #nickname_select_view #header_text {
-            font-size: 25px !important;
-        }
-
-    }
-
-    @media (min-width: 1910px) {
-        #text_channel_name_header {
-            font-size: 50px;
-        }
-        #nickname_select_view #header_text {
-            font-size: 50px !important;
-        }
-    }
-
-    #nickname_select_view #wrapper {
-        text-align: center; 
-        color: white;
-        margin-top: 40vh;
-    }
-
-    #nickname_select_view a {
-        text-decoration: none;
-        color: lightgray;
-    }
-
-    #nickname_select_view a:hover {
-        text-decoration: underline;
-    }
-
-    #nickname_select_view #header_text {
-        font-size: 2.9vw;
-    }
-
-    #nickname_select_view #server_nickname_input {
-        height: 50px;
+    #website_wrapper {
         width: 100%;
-        background-color: transparent;
-        border: none;
-        border-bottom: 3px solid transparent;
-        color: white;
-        text-align: center;
-        font-size: 30px;
-        box-shadow: inset 0px 0px 10px rgba(0,0,0,0.9);
     }
+    #nickname_select_view #header_text {
+        font-size: 25px !important;
+    }
+    #online_users {
+        width: 100%;
+    }
+}
 
-    #nickname_select_view #server_nickname_input:hover, #nickname_select_view #server_nickname_input:focus {
-        background-color: white;
-        color: black;
+@media (max-width: 1200px) {
+    #website_wrapper {
+        width: 80vw;
     }
+    #message_input_bottom_wrapper #message_input_bottom {
+        width: 80vw;
+    }
+    #online_users {
+        width: 80vw;
+    }
+}
 
-    #nickname_select_view #server_nickname_input:valid {
-        background-color: white;
-        color: black;
-        border-color: #76FF03;
+@media (min-width: 1910px) {
+    #text_channel_name_header {
+        font-size: 50px;
     }
-
-    #nickname_select_view #server_nickname_input:invalid {
-        border-color: red;
+    #nickname_select_view #header_text {
+        font-size: 50px !important;
     }
+}
