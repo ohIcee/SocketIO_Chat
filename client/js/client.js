@@ -3,6 +3,8 @@ $('#nickname_select_view').show();
 
 var sock = io();
 
+var current_room = '';
+
 // Settings variables
 var show_users_typing = true;
 var dynamic_message_background_colors = true;
@@ -17,12 +19,24 @@ sock.on('settings', (data) => {
         $('#users_nav').hide();
         $('.topNavActiveUsersButton').hide();
     }
+
 });
 
 // Executes when a message is recieved
 sock.on('msg', onMessage);
 // Executes when a server message is recieved
 sock.on('servermsg', onServerMessage);
+
+$(function () {
+    $(window).scroll(function () {
+        // set distance user needs to scroll before we fadeIn navbar
+        if ($(this).scrollTop() > 85) {
+            $('#top_nav_channel_name').show();
+        } else {
+            $('#top_nav_channel_name').hide();
+        }
+    });
+});
 
 // If show users typing is enabled, show who is typing
 if(show_users_typing) {
@@ -83,7 +97,7 @@ function onMessage(msg, nick) {
             switchColor();
             // Show the message and get the background color
             $('#messages').append($('<li>').html(message).css("background-color", getCurrentColor()));
-        }           
+        }
        
         // If the previous message nickname is the current message nickname
         if(prevMessageNick == nick) {
@@ -198,6 +212,23 @@ if(show_users_typing) {
 
 }
 
+sock.on('join_room_response', (response) => {
+    current_room = response;
+    update_room_names();
+    reset_room_messages();
+});
+
+function update_room_names() {
+    $('#text_channel_name_header').text('#' + current_room);
+    $('#messages_welcome_header').text(current_room);
+    $('#top_nav_channel_name').text('#' + current_room);
+}
+
+function reset_room_messages() {
+    $('#messages').empty();
+    $('#messages').append('<li>').html('<li>Welcome to #<span id="messages_welcome_header">' + current_room + '</span> | Use /room < name > </li>');
+}
+
 sock.on('nickname_check_response', (response) => {
     if(response.avalible) {
         // Nickname avalible
@@ -206,10 +237,11 @@ sock.on('nickname_check_response', (response) => {
         return;
     } else {
         // Nickname taken
-        // Disable input for 1 second for security reasons
         $('#server_nickname_input').attr('disabled', 'disabled');
+        $('#server_nickname_input').val(response.msg);
         setTimeout(function() {
             $('#server_nickname_input').removeAttr('disabled');
+            $('#server_nickname_input').val('');
         }, 1000);
         return;
     }
@@ -229,62 +261,95 @@ function set_nickname(nickname) {
 $(document).keydown(function(e) {
 
 
-// If enter is pressed and message_input_bottom is focused
-if(e.which == 13 && $('#message_input_bottom').is(":focus")) {
-    // If we have nothing typed, deny message send
-    if(jQuery.trim( $('#message_input_bottom').val() ).length == 0) {
+    // If enter is pressed and message_input_bottom is focused
+    if(e.which == 13 && $('#message_input_bottom').is(":focus")) {
+
+        var inputVal = $('#message_input_bottom').val();
+
+        // If we have nothing typed, deny message send
+        if(jQuery.trim( inputVal ).length == 0) {
+            return;
+        }
+
+        // Check if the user has entered a / command
+        if(inputVal.indexOf('/') == 0) {
+            // Check if user has entered /room command
+            if(inputVal.indexOf('room') >= 0) {
+                //alert('You entered _room_ command');
+                //var command = inputVal.substr(0, inputVal.indexOf(' '));
+                var value = inputVal.substr(inputVal.indexOf(' ') + 1);
+                sock.emit('join room', {currentRoom: current_room, roomToJoin: value});
+                clear_input();
+                return;
+            }
+            clear_input();
+            return;
+        }
+
+        // Run the send message function
+        sendMessage(inputVal);
         return;
     }
-    // Run the send message function
-    sendMessage();
-    return;
-}
 
-// If enter is pressed and server_nickname_input is focused
-if(e.which == 13 && $('#server_nickname_input').is(":focus")) {
-    // If the input is valid (not null)
-    if($('#server_nickname_input').is(":valid")) {
-        // Get the nickname text
-        var inputVal = $('#server_nickname_input').val();
-        // Remove un-needed spaces before and after the string
-        inputVal = $.trim(inputVal);
-        // Sanitize the string (removing all html tags)
-        inputVal = sanitize(inputVal);
-        // Remove all spaces
-        inputVal = inputVal.replace(/\s/g,'');
+    // If enter is pressed and server_nickname_input is focused
+    if(e.which == 13 && $('#server_nickname_input').is(":focus")) {
+        // If the input is valid (not null)
+        if($('#server_nickname_input').is(":valid")) {
+            // Get the nickname text
+            var inputVal = $('#server_nickname_input').val();
 
-        // Tell the server to check if nickname is avalible
-        sock.emit('check_nickname', inputVal);
+            // Remove un-needed spaces before and after the string
+            inputVal = $.trim(inputVal);
+            // Sanitize the string (removing all html tags)
+            inputVal = sanitize(inputVal);
+            // Remove all spaces
+            inputVal = inputVal.replace(/\s/g,'');
+/*
+            if (inputVal > 20) {
+                $('#server_nickname_input').attr('disabled', 'disabled');
+                setTimeout(function() {
+                    $('#server_nickname_input').removeAttr('disabled');
+                }, 1000);
+                return;
+            }
+*/
+            // Tell the server to check if nickname is avalible
+            sock.emit('check_nickname', inputVal);
+            setTimeout(function() {
+                sock.emit('join room', {currentRoom: current_room, roomToJoin: 'general'});
+            }, 1000);
+        }
     }
-}
 
-// If a key other than enter is pressed
-if(e.which != 13) {
-    // If we are in the chat room
-    if($('#chat_room_view').is(":visible")) {
-        // Focus the message input, so
-        // we can immediately start typing
-        $('#message_input_bottom').focus();
+    // If a key other than enter is pressed
+    if(e.which != 13) {
+        // If we are in the chat room
+        if($('#chat_room_view').is(":visible")) {
+            // Focus the message input, so
+            // we can immediately start typing
+            $('#message_input_bottom').focus();
+        }
+        // If we are choosing our nickname
+        if($('#nickname_select_view').is(":visible")) {
+            // Focus the message input, so
+            // we can immediately start typing
+            $('#server_nickname_input').focus();
+        }
     }
-    // If we are choosing our nickname
-    if($('#nickname_select_view').is(":visible")) {
-        // Focus the message input, so
-        // we can immediately start typing
-        $('#server_nickname_input').focus();
-    }
-}
     
 });
 
 // Send our message to the server
-function sendMessage() {
+function sendMessage(message) {
     // Tells the server our message
-    sock.emit('msg', $('#message_input_bottom').val());
+    sock.emit('msg', { txt: message, room: current_room });
     // Empty the message input field
-    $('#message_input_bottom').val('');
+    clear_input();
 }
 
-
+function clear_input() {
+    $('#message_input_bottom').val('');
+}
 
 // Text sanitization code - Not commented
 

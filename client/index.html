@@ -29,7 +29,7 @@
 
         <div id="chat_room_view" style="display: none"> <!-- [START] chat_room_view -->
 
-        <div id="users_nav" class="sidenav"> <!-- [START] users_nav -->
+        <div id="users_nav" class="sidenav_users"> <!-- [START] users_nav -->
             <a href="javascript:void(0)" class="closebtn" onclick="close_users_nav()">&times;</a>
             <p id="header"> ACTIVE USERS </p>
             <div id="mobile_active_users"></div>
@@ -37,15 +37,17 @@
 
         <div id="top_nav">  <!-- [START] top_nav -->
             <div id="website_wrapper">
+                <!--<button id="menu_button" onclick="" style="float: left"> <i style="color: white;" class="material-icons">&#xE5D2;</i> </button>-->
+                <span id="top_nav_channel_name"> #CHANNEL </span>
                 <button id="menu_button" class="topNavActiveUsersButton" onclick="open_users_nav()" style="float: right"> <i style="color: white;" class="material-icons">&#xE7FB;</i> </button>
             </div>
         </div> <!-- [END] top_nav -->
 
-        <p id="text_channel_name_header">#GENERAL_CHANNEL</p>
+        <p id="text_channel_name_header"></p>
 
         <div id="chat_log"> <!-- [START] chat_log -->
             <ul id="messages">
-                <li>Welcome to #GENERAL_CHANNEL</li>
+                <li id="mesages_welcome">Joining...</li>
             </ul>
         </div> <!-- [END] chat_log -->
 

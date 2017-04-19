@@ -1,10 +1,14 @@
 /*
 
 // TODO:
-- More rooms
 - Improve colors
 - Language filter
 - Chat history (~ 10 messages)
+- Message size slider(?)
+- Implement two ways of users typing; Check every .5 seconds <-> Check everytime you type; Gives server operators more control over bandwith
+- Save current room into cache/cookies
+- Show users typing seperated by rooms
+- Save rooms and information into db
 
 */
 
@@ -31,12 +35,20 @@ io.on('connection', onConnection);
     // Shows who is typing
     var show_users_typing = true;
 
+    // Logs when a user starts and stops typing
+    var log_users_typing = false;
+
     // Keep background color if same user types multiple lines of messages;
     // Changes color only when new user types a message
     var dynamic_message_background_colors = true;
 
     // Show who is currently active
     var show_active_users = true;
+
+    // TODO
+    // Allow users to create their own rooms
+    // If disabled only general is avalible to all
+    var allow_multiple_rooms = true;
 
 // </>
 
@@ -62,47 +74,75 @@ console.log('--> Change options in server.js\n\n\n');
 
 // When a new user connects
 function onConnection(sock) {
+
+    // Tell the console a new user connected;
+    // Use his ID - nickname is not set
     console.log('User connected... Waiting for nickname (' + sock.id + ')');
 
     // Send settings to the user
     io.emit('settings', { showUsersTyping: show_users_typing, DynamicMessageBGColors: dynamic_message_background_colors, showActiveUsers: show_active_users });
 
     // Executes when a user sends a message
-    sock.on('msg', (txt) => {
-        // If the user did not choose a nickname, disconnect him
+    sock.on('msg', (data) => {
+        // If the user did not choose a nickname
+        // And managed to send a message,
+        // Disconnect him
         if(sock.nickname == null) {
             sock.disconnect();
         }
         // Send the message to every other user
-        io.emit('msg', txt, sock.nickname);
+        io.to(data.room).emit('msg', data.txt, sock.nickname);
         // Log the message if enabled
-        if(log_chat) { console.log(sock.nickname + ' : ' + txt); }
+        if(log_chat) { console.log('[ ' + data.room + ' ] ' + sock.nickname + ' : ' + data.txt); }
     });
 
     // Check for duplicate nicknames
+
+
+
+//  FIX DI>Z
+
     sock.on('check_nickname', (nickname) => {
-        var found_dupe = false;
-        active_users.forEach(function(element) {
-            if(element == nickname) {
-                found_dupe = true;
-                return;
-            }
-        }, this);
+
+        var passed = false;
+        var passed_length = true;
+
+        if(nickname.length > 20) {
+            passed_length = false;
+        }
+ 
+        if(passed_length) {
+            active_users.forEach(function(element) {
+                if(element == nickname) {
+                    passed = false;
+                    return;
+                }
+            }, this);
+        }
 
         // Check if a duplicate was found and tell user the response
-        if(found_dupe) {
-            io.sockets.connected[sock.id].emit('nickname_check_response', { avalible: false });
+        if(!passed || !passed_length) {
+            if(!passed) {
+                io.sockets.connected[sock.id].emit('nickname_check_response', { avalible: false, msg: 'Unavalible' });
+            } else if (!passed_length) {
+                io.sockets.connected[sock.id].emit('nickname_check_response', { avalible: false, msg: 'Too long (> 20)' });
+            }
         } else {
             io.sockets.connected[sock.id].emit('nickname_check_response', { avalible: true, nickname: nickname });
         }
     });
 
+
+
+
+
     // Executes when a user sets his nickname
     sock.on('set nickname', (nickname) => {
         // Set the nickname
         sock.nickname = nickname;
+        console.log('[NICKNAME] ' + sock.id + ' -> ' + sock.nickname);
         // Tell users a new user joined
-        io.emit('servermsg', sock.nickname + ' has joined the chat.');
+        io.to('general').emit('servermsg', sock.nickname + ' has joined the chat.');
         // Add this user into the active users array
         active_users.push(sock.nickname);
         if(show_active_users) {
@@ -118,17 +158,19 @@ function onConnection(sock) {
         sock.on('user typing', (data) => {
             // If he started typing
             if(data) {
-                // Log who is typing
-                console.log(sock.nickname + ' is typing');
+                if(log_users_typing)
+                    // Log who is typing
+                    console.log(sock.nickname + ' is typing');
                 // Add the user to the array of currently typing users
                 users_typing.push(sock);
                 
             // If he stopped typing
-            } else {
+        } else {
+            if(log_users_typing)
                 // Log who stopped typing
                 console.log(sock.nickname + ' stopped typing');
-                // Run function to tell who stopped typing
-                remove_array_element(users_typing, sock);
+            // Run function to tell who stopped typing
+            remove_array_element(users_typing, sock);
             }
         });
 
@@ -154,6 +196,14 @@ function onConnection(sock) {
         }, 1000);
 
     }    
+
+    sock.on('join room', (data) => {
+        if(data.currentRoom != null)
+            sock.leave(data.currentRoom);
+        sock.join(data.roomToJoin);
+        console.log(sock.nickname + " joined room " + data.roomToJoin);
+        io.sockets.connected[sock.id].emit('join_room_response', data.roomToJoin);
+    });
 
     // Executes when a user disconnects
     sock.on('disconnect', () => {

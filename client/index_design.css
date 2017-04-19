@@ -18,6 +18,11 @@ body {
     font-size: 2.9vw;
     color: white;
     transition-duration: 0.1s;
+    text-transform: uppercase;
+}
+
+#messages_welcome_header {
+    text-transform: uppercase;
 }
 
 #online_users {
@@ -175,6 +180,7 @@ body {
     right: 0;
     height: 50px;
     background-color: #424242;
+    text-align: center;
 }
 
 #top_nav #menu_button {
@@ -205,7 +211,7 @@ body {
     list-style-type: none;
 }
 
-.sidenav {
+.sidenav_users {
     height: 100%;
     width: 0;
     position: fixed;
@@ -218,7 +224,7 @@ body {
     padding-top: 60px;
 }
 
-.sidenav a {
+.sidenav_users a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
     font-size: 25px;
@@ -227,11 +233,11 @@ body {
     transition: 0.3s;
 }
 
-.sidenav a:hover, .offcanvas a:focus{
+.sidenav_users a:hover, .offcanvas a:focus {
     color: #f1f1f1;
 }
 
-.sidenav .closebtn {
+.sidenav_users .closebtn {
     position: absolute;
     top: 0;
     right: 25px;
@@ -239,9 +245,15 @@ body {
     margin-left: 50px;
 }
 
+#top_nav_channel_name {
+    display: none;
+    line-height: 50px;
+    color: white;
+}
+
 @media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+  .sidenav_users {padding-top: 15px;}
+  .sidenav_users a {font-size: 18px;}
 }
 
 @media (max-width: 600px) {
@@ -273,12 +285,12 @@ body {
         margin: 0 auto;
     }
     #text_channel_name_header {
-        font-size: 20px;
+        display: none;
     }
-
     #message_input_bottom_wrapper #message_input_bottom {
         padding: 0;
         margin: 0 auto;
+        width: 100% !important;
     }
     #website_wrapper {
         width: 100%;
@@ -288,6 +300,9 @@ body {
     }
     #online_users {
         width: 100%;
+    }
+    #top_nav_channel_name {
+        display: unset;
     }
 }
 
