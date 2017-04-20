@@ -9,11 +9,13 @@ var current_room = '';
 var show_users_typing = true;
 var dynamic_message_background_colors = true;
 var show_active_users = true;
+var allow_user_rooms = true;
 // Set the settings variables
 sock.on('settings', (data) => {
     show_users_typing = data.showUsersTyping;
     dynamic_message_background_colors = data.DynamicMessageBGColors;
     show_active_users = data.showActiveUsers;
+    allow_user_rooms = data.allowUserRooms;
 
     if(!show_active_users) {
         $('#users_nav').hide();
@@ -277,6 +279,15 @@ $(document).keydown(function(e) {
             if(inputVal.indexOf('room') >= 0) {
                 //alert('You entered _room_ command');
                 //var command = inputVal.substr(0, inputVal.indexOf(' '));
+                if(!allow_user_rooms) {
+                    $('#message_input_bottom').attr('disabled', 'disabled');
+                    $('#message_input_bottom').val('Rooms are disabled on this server');
+                    setTimeout(function() {
+                        $('#message_input_bottom').removeAttr('disabled');
+                        $('#message_input_bottom').val('');
+                    }, 1000);
+                    return;
+                }
                 var value = inputVal.substr(inputVal.indexOf(' ') + 1);
                 sock.emit('join room', {currentRoom: current_room, roomToJoin: value});
                 clear_input();

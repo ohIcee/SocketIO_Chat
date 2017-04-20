@@ -45,10 +45,9 @@ io.on('connection', onConnection);
     // Show who is currently active
     var show_active_users = true;
 
-    // TODO
     // Allow users to create their own rooms
     // If disabled only general is avalible to all
-    var allow_multiple_rooms = true;
+    var allow_user_rooms = true;
 
 // </>
 
@@ -70,6 +69,8 @@ if(show_users_typing) { console.log('> [ENABLED] Show users typing'); }
 else { console.log('> [DISABLED] Show users typing'); }
 if(dynamic_message_background_colors) { console.log('> [ENABLED] Dynamic message background colors'); }
 else { console.log('> [DISABLED] Dynamic message background colors'); }
+if(allow_user_rooms) { console.log('> [ENABLED] Allow users to create rooms'); }
+else { console.log('> [DISABLED] Allow users to create rooms'); }
 console.log('--> Change options in server.js\n\n\n');
 
 // When a new user connects
@@ -80,7 +81,7 @@ function onConnection(sock) {
     console.log('User connected... Waiting for nickname (' + sock.id + ')');
 
     // Send settings to the user
-    io.emit('settings', { showUsersTyping: show_users_typing, DynamicMessageBGColors: dynamic_message_background_colors, showActiveUsers: show_active_users });
+    io.emit('settings', { showUsersTyping: show_users_typing, DynamicMessageBGColors: dynamic_message_background_colors, showActiveUsers: show_active_users, allowUserRooms: allow_user_rooms });
 
     // Executes when a user sends a message
     sock.on('msg', (data) => {
@@ -90,41 +91,41 @@ function onConnection(sock) {
         if(sock.nickname == null) {
             sock.disconnect();
         }
-        // Send the message to every other user
-        io.to(data.room).emit('msg', data.txt, sock.nickname);
-        // Log the message if enabled
-        if(log_chat) { console.log('[ ' + data.room + ' ] ' + sock.nickname + ' : ' + data.txt); }
+
+        if(allow_user_rooms) {
+            // Send the message to every other user in that room
+            io.to(data.room).emit('msg', data.txt, sock.nickname);
+            // Log the message if enabled
+            if(log_chat) { console.log('[ #' + data.room + ' ] ' + sock.nickname + ' : ' + data.txt); }
+        } else {
+            io.emit('msg', data.txt, sock.nickname);
+            console.log(sock.nickname + ' : ' + data.txt);
+        }
     });
-
-    // Check for duplicate nicknames
-
-
-
-//  FIX DI>Z
 
     sock.on('check_nickname', (nickname) => {
 
-        var passed = false;
-        var passed_length = true;
+        var passed_length_test = true;
+        var passed_dupe_test = true;
 
         if(nickname.length > 20) {
-            passed_length = false;
+            passed_length_test = false;
         }
  
-        if(passed_length) {
+        if(passed_length_test) {
             active_users.forEach(function(element) {
                 if(element == nickname) {
-                    passed = false;
+                    passed_dupe_test = false;
                     return;
                 }
             }, this);
         }
 
         // Check if a duplicate was found and tell user the response
-        if(!passed || !passed_length) {
-            if(!passed) {
+        if(!passed_dupe_test || !passed_length_test) {
+            if(!passed_dupe_test) {
                 io.sockets.connected[sock.id].emit('nickname_check_response', { avalible: false, msg: 'Unavalible' });
-            } else if (!passed_length) {
+            } else if (!passed_length_test) {
                 io.sockets.connected[sock.id].emit('nickname_check_response', { avalible: false, msg: 'Too long (> 20)' });
             }
         } else {
@@ -132,17 +133,13 @@ function onConnection(sock) {
         }
     });
 
-
-
-
-
     // Executes when a user sets his nickname
     sock.on('set nickname', (nickname) => {
         // Set the nickname
         sock.nickname = nickname;
         console.log('[NICKNAME] ' + sock.id + ' -> ' + sock.nickname);
         // Tell users a new user joined
-        io.to('general').emit('servermsg', sock.nickname + ' has joined the chat.');
+        io.emit('servermsg', sock.nickname + ' has joined the server.');
         // Add this user into the active users array
         active_users.push(sock.nickname);
         if(show_active_users) {
