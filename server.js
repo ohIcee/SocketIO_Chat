@@ -154,7 +154,7 @@ function onConnection(sock) {
         // When a user starts or stops typing
         sock.on('user typing', (data) => {
             // If he started typing
-            if(data) {
+            if(data.state) {
                 if(log_users_typing)
                     // Log who is typing
                     console.log(sock.nickname + ' is typing');
@@ -190,7 +190,7 @@ function onConnection(sock) {
                 // Send JSON of users typing
                 io.emit('user_typing_func', { isTyping: true, users: users_typing_nicknames});
             }
-        }, 1000);
+        }, 1000); // x miliseconds
 
     }    
 
@@ -200,6 +200,8 @@ function onConnection(sock) {
         sock.join(data.roomToJoin);
         console.log(sock.nickname + " joined room " + data.roomToJoin);
         io.sockets.connected[sock.id].emit('join_room_response', data.roomToJoin);
+        var newroom = new user_room();
+        user_rooms.push(sock.nickname);
     });
 
     // Executes when a user disconnects
@@ -239,3 +241,10 @@ function remove_array_element(array, element) {
         array.splice(i, 1);
     }
 }
+
+var user_rooms = [];
+
+var user_room = {
+    users_typing: [],
+    users_active: []
+};

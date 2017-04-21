@@ -194,7 +194,7 @@ if(show_users_typing) {
             // status, broadcast it
             if(!broadcasted_typing)
                 // Tell the server we are typing
-                sock.emit('user typing', true);
+                sock.emit('user typing', { state: true, room: current_room });
             // Tell the variable, we are typing
             broadcasted_typing = true;
 
@@ -204,7 +204,7 @@ if(show_users_typing) {
             // status, don't broadcast it again
             if(broadcasted_typing)
                 // Tell the server we are not typing
-                sock.emit('user typing', false);
+                sock.emit('user typing', { state: false, room: current_room });
             // Tell the variable, we are not typing
             broadcasted_typing = false;
 
